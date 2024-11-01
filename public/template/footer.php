@@ -1,6 +1,6 @@
     </main>
     <footer>
-        <p>Chess Game by<a href="mailto:andreguilhermecorrea@example.com">andreguilhermecorrea&copy; 2024</a></p>
+        <p>PHChess&copy; by: <a href="mailto:andreguilhermecorrea@example.com">andreguilhermecorrea</a> 2024</p>
     </footer>
 </body>
 </html>
