@@ -1,2 +1,3 @@
-# PHChess
+# Lançamento PHChess
+
 Learning PHP
