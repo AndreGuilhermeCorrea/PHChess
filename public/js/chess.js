@@ -1,41 +1,62 @@
-// Seleciona todas as peças para permitir arrastar
+// Ultima peça movida
+let lastMovedColor = null;
+
+// Inicializa o tabuleiro de xadrez
 document.querySelectorAll('.piece').forEach(piece => {
     piece.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('pieceId', e.target.id); // Armazena o ID da peça sendo arrastada
-        e.dataTransfer.setData('squareId', e.target.parentElement.id); // Armazena o ID da casa de origem
+        // Armazena o ID da peça 
+        e.dataTransfer.setData('pieceId', e.target.id); 
+        // Armazena o ID da casa
+        e.dataTransfer.setData('squareId', e.target.parentElement.id); 
     });
 });
 
-// Configura cada casa do tabuleiro para permitir o drop
+// Configura tuplas de peças e casas
 document.querySelectorAll('.square').forEach(square => {
     square.addEventListener('dragover', (e) => {
-        e.preventDefault(); // Necessário para permitir o drop
+        e.preventDefault(); 
     });
 
+    // Configura o evento de soltar a peça
     square.addEventListener('drop', (e) => {
         e.preventDefault();
-        const pieceId = e.dataTransfer.getData('pieceId'); // Recupera o ID da peça
-        const sourceSquareId = e.dataTransfer.getData('squareId'); // Casa de origem
-        const targetSquare = e.target.closest('.square'); // Casa de destino
+        // Obtém o ID da peça
+        const pieceId = e.dataTransfer.getData('pieceId'); 
+        // Obtém o ID da casa 
+        const sourceSquareId = e.dataTransfer.getData('squareId'); 
+        // Obtém o ID da casa de destino
+        const targetSquare = e.target.closest('.square'); 
+        // Verifica se a peça é preta
+        const isBlack = pieceId.includes('black');
         console.log(`Movendo peça ${pieceId} de ${sourceSquareId} para ${targetSquare.id}`);
 
+        // Verifica se a peça é da mesma cor que a última movida
+        if (lastMovedColor !== null && lastMovedColor === (isBlack ? 'black' : 'white')) {
+            alert("Movimento inválido! Não é permitido mover a mesma cor duas vezes consecutivas.");
+            return;
+        }
+
+        // Valida o movimento
         if (isValidMove(pieceId, sourceSquareId, targetSquare.id)) {
-            const piece = document.getElementById(pieceId); // Seleciona a peça pelo ID
+
+            const piece = document.getElementById(pieceId); 
 
             // Verifica se a casa de destino possui uma peça
             const targetPiece = targetSquare.querySelector('.piece');
             if (targetPiece) {
-                // Verifica se a peça é da mesma cor (não permite capturas da mesma cor)
+                // Verifica se a peça é da mesma cor
                 if (targetPiece.id.includes(pieceId.includes('black') ? 'black' : 'white')) {
                     alert("Movimento inválido! A casa de destino possui uma peça da mesma cor.");
                     return;
                 } else {
-                    // Remove a peça adversária da casa (simulando uma captura)
+                    // Remove a peça adversária da casa
                     targetPiece.remove();
                 }
             }
             // Move a peça para a nova casa
             targetSquare.appendChild(piece);
+            // Atualiza a cor da última peça movida 
+            lastMovedColor = isBlack ? 'black' : 'white';
         } else {
             alert("Movimento inválido!"); // Notifica sobre movimento inválido
             console.log("Falha na validação de movimento.");
@@ -45,10 +66,13 @@ document.querySelectorAll('.square').forEach(square => {
 
 // Função para validar o movimento
 function isValidMove(pieceId, sourceSquareId, targetSquareId) {
-    const pieceType = pieceId.split('-')[0]; // Obtém o tipo de peça
+    // Obtém o tipo de peça
+    const pieceType = pieceId.split('-')[0];
+    // Obtém as coordenadas da casa de origem e destino
     const [sourceCol, sourceRow] = [sourceSquareId.charAt(0), parseInt(sourceSquareId.charAt(1))];
     const [targetCol, targetRow] = [targetSquareId.charAt(0), parseInt(targetSquareId.charAt(1))];
     console.log(`Validando ${pieceType} de ${sourceSquareId} para ${targetSquareId}`);
+    
     switch (pieceType) {
         case 'pawn':
             return isValidPawnMove(sourceCol, sourceRow, targetCol, targetRow, pieceId.includes('black'));
@@ -81,12 +105,13 @@ function isValidPawnMove(sourceCol, sourceRow, targetCol, targetRow, isBlack) {
     if (sourceCol === targetCol && sourceRow === startingRow && targetRow === sourceRow + (2 * direction)) {
         return true;
     }
-    // Captura diagonal
+    // Captura
     if (Math.abs(targetCol.charCodeAt(0) - sourceCol.charCodeAt(0)) === 1 && targetRow === sourceRow + direction) {
         return true;
     }
     return false;
 }
+
 // Função de validação para torre
 function isValidRookMove(sourceCol, sourceRow, targetCol, targetRow) {
     return sourceCol === targetCol || sourceRow === targetRow;
