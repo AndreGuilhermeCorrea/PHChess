@@ -22,5 +22,6 @@
             </div>
         </div>
     </div>
-
 </div>
+<script src="js/chess.js"></script>
+<script src="js/cronometro.js"></script>
