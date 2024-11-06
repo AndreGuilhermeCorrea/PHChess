@@ -127,6 +127,95 @@ main {
     font-size: 1.1em;
 }
 
+/* Estilos para o tabuleiro */
+#board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.chess-board {
+    display: grid;
+    grid-template-columns: repeat(8, 64px); 
+    grid-template-rows: repeat(8, 64px);   
+    border: 5px solid #333;                 
+    width: 522px;                           
+    height:522px;                          
+}
+
+.square {
+    width: 64px;
+    height: 64px;
+}
+
+.square.light {
+    background-color: #f0d9b5; /* Cor clara */
+}
+
+.square.dark {
+    background-color: #b58863; /* Cor escura */
+}
+
+.piece {
+    margin-top: 8px;
+    width: 70%;
+    height: 70%;
+    cursor: pointer;
+}
+
+
+/* Painel de informações */
+.info-panel {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 20px;
+    padding: 15px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    width: 400px;
+}
+
+.info-item {
+    flex: 1 1 100%;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.info-item h3 {
+    margin-bottom: 5px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.info-item p {
+    font-size: 1.1em;
+    color: #555;
+}
+
+.captured-pieces {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pieces {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.pieces img {
+    width: 30px;
+    height: 30px;
+}
+
+
 /* FOOTER */
 footer {
     width: 100%;
