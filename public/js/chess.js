@@ -1,3 +1,58 @@
+
+// public/js/chess.js
+
+import Pawn from './pieces/peao.js';
+import Knight from './pieces/cavalo.js';
+import Rook from './pieces/torre.js';
+import King from './pieces/rei.js';
+import Queen from './pieces/rainha.js';
+import Bishop from './pieces/bispo.js';
+
+// Criação de uma instância do tabuleiro
+const board = new Board();
+const chessMatch = new ChessMatch();
+
+// Criação das peças no tabuleiro com suas posições iniciais
+const pieces = {
+    // Peças brancas
+    'pawn-white-a2': new Pawn('white', board, chessMatch),
+    'pawn-white-b2': new Pawn('white', board, chessMatch),
+    'pawn-white-c2': new Pawn('white', board, chessMatch),
+    'pawn-white-d2': new Pawn('white', board, chessMatch),
+    'pawn-white-e2': new Pawn('white', board, chessMatch),
+    'pawn-white-f2': new Pawn('white', board, chessMatch),
+    'pawn-white-g2': new Pawn('white', board, chessMatch),
+    'pawn-white-h2': new Pawn('white', board, chessMatch),
+    'knight-white-g1': new Knight('white', board),
+    'knight-white-h1': new Knight('white', board),
+    'rook-white-h1': new Rook('white', board),
+    'rook-white-a1': new Rook('white', board),
+    'bishop-white-f1': new Bishop('white', board),
+    'bishop-white-g1': new Bishop('white', board),
+    'queen-white-d1': new Queen('white', board),
+    'king-white-e1': new King('white', board, chessMatch),
+    // Peças pretas
+    'pawn-black-a7': new Pawn('black', board, chessMatch),
+    'pawn-black-b7': new Pawn('black', board, chessMatch),
+    'pawn-black-c7': new Pawn('black', board, chessMatch),
+    'pawn-black-d7': new Pawn('black', board, chessMatch),
+    'pawn-black-e7': new Pawn('black', board, chessMatch),
+    'pawn-black-f7': new Pawn('black', board, chessMatch),
+    'pawn-black-g7': new Pawn('black', board, chessMatch),
+    'pawn-black-h7': new Pawn('black', board, chessMatch),
+    'knight-black-b8': new Knight('black', board),
+    'knight-black-g8': new Knight('black', board),
+    'rook-black-a8': new Rook('black', board),
+    'rook-black-h8': new Rook('black', board),
+    'bishop-black-c8': new Bishop('black', board),
+    'bishop-black-f8': new Bishop('black', board),
+    'queen-black-d8': new Queen('black', board),
+    'king-black-e8': new King('black', board, chessMatch), 
+};
+
+
+
+
 // Ultima peça movida
 let lastMovedColor = null;
 
@@ -138,3 +193,5 @@ function isValidKingMove(sourceCol, sourceRow, targetCol, targetRow) {
     const rowDiff = Math.abs(targetRow - sourceRow);
     return colDiff <= 1 && rowDiff <= 1;
 }
+
+// Fim do código

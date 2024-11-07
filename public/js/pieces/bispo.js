@@ -1,3 +1,6 @@
+
+
+// public/js/pieces/bispo.js
 class Bishop {
     constructor(color, board) {
         this.color = color;
@@ -40,3 +43,4 @@ class Bishop {
 }
 
 export default Bishop;
+// Fim do codigo

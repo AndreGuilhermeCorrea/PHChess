@@ -1,3 +1,6 @@
+
+
+// public/js/pieces/torre.js
 class Rook {
     constructor(color, board) {
         this.color = color;
@@ -40,3 +43,4 @@ class Rook {
 }
 
 export default Rook;
+// Fim do codigo

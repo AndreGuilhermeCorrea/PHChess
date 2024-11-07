@@ -1,3 +1,6 @@
+
+
+// public/js/pieces/cavalo.js
 class Knight {
     constructor(color, board) {
         this.color = color;
@@ -36,3 +39,4 @@ class Knight {
 }
 
 export default Knight;
+// Fim do codigo

@@ -1,3 +1,6 @@
+
+
+// pubic/js/pieces/rainha.js
 class Queen {
     constructor(color, board) {
         this.color = color;
@@ -44,3 +47,4 @@ class Queen {
 }
 
 export default Queen;
+// Fim do codigo

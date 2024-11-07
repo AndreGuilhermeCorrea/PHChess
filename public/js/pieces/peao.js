@@ -1,3 +1,6 @@
+
+
+// public/js/pieces/peao.js
 class Pawn {
     constructor(color, board, chessMatch) {
         this.color = color;
@@ -59,3 +62,4 @@ class Pawn {
 }
 
 export default Pawn;
+// Fim do codigo
