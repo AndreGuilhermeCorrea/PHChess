@@ -1,3 +1,4 @@
+    
     </main>
     <footer>
         <p>PHChess&copy;</p>
