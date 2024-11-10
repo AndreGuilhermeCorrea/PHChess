@@ -79,7 +79,7 @@ async function handleMove() {
         } else {
             console.log("Estado recebido do backend:", dtajson.board);
             atualizarTabuleiro(dtajson.board);
-            console.log("Tabuleiro atualizado no frontend.");
+            atualizarPecasCapturadas(dtajson.capturedPieces); 
         }
         origin = null;
         pieceId = null;
@@ -151,9 +151,36 @@ document.getElementById('btn-reload').addEventListener('click', async () => {
         } else {
             console.log('JSON parseado Tabuleiro reiniciado:', dtajson);
             atualizarTabuleiro(dtajson.board);
+            atualizarPecasCapturadas(dtajson.capturedPieces);
         }
 
     } catch (error) {
         console.error("Erro ao reiniciar o tabuleiro:", error.message);
     }
 });
+
+
+// Função para atualizar o painel de peças capturadas
+function atualizarPecasCapturadas(capturedPieces) {
+    const capturedPretas = document.getElementById('captured-pretas');
+    const capturedBrancas = document.getElementById('captured-brancas');
+    
+    // Limpa as listas antes de inserir as novas peças capturadas
+    capturedPretas.innerHTML = '';
+    capturedBrancas.innerHTML = '';
+
+    // Insere cada peça capturada na sua respectiva seção
+    capturedPieces.forEach(pieceCode => {
+        const img = document.createElement('img');
+        img.src = `../img/pieces/${pieceCode}.png`;
+        img.classList.add('captured-piece');
+
+        // Verifica a cor pelo sufixo 
+        if (pieceCode.endsWith('p')) {
+            capturedPretas.appendChild(img); 
+        } else {
+            capturedBrancas.appendChild(img); 
+        }
+    });
+}
+

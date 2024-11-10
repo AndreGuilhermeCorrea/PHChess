@@ -48,11 +48,17 @@ function movePiece() {
         // Atualiza o objeto na sessão
         $_SESSION['chessMatch'] = $chessMatch;
         session_write_close();
-
+    
+        // Obtém o estado atual do tabuleiro e as peças capturadas
         $tabuleiroArray = $chessMatch->getPieces();
-        
+        $capturedPieces = $chessMatch->getPiecesCaptured();
+    
         header('Content-Type: application/json');
-        echo json_encode(['success' => true, 'board' => $tabuleiroArray]);
+        echo json_encode([
+            'success' => true,
+            'board' => $tabuleiroArray,
+            'capturedPieces' => $capturedPieces
+        ]);
         exit;
     } catch (Exception $e) {
         header('Content-Type: application/json');
@@ -62,12 +68,22 @@ function movePiece() {
 
 
 function restart(){
-    $_SESSION['chessMatch'] = new ChessMatch();
-    $chessMatch = $_SESSION['chessMatch'];
-    $tabuleiroArray = $chessMatch->getPieces();
-    error_log("Tabuleiro reiniciado");
+    try {
+        $_SESSION['chessMatch'] = new ChessMatch();
+        $chessMatch = $_SESSION['chessMatch'];
+        
+        $tabuleiroArray = $chessMatch->getPieces();
+        $capturedPieces = $chessMatch->getPiecesCaptured();
     
-    header('Content-Type: application/json');
-    echo json_encode(['success' => true, 'board' => $tabuleiroArray]);
-    exit;
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true,
+            'board' => $tabuleiroArray,
+            'capturedPieces' => $capturedPieces
+        ]);
+        exit;
+    } catch (Exception $e) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+    }
 }

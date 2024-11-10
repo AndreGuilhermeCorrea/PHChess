@@ -13,11 +13,9 @@
                     <p id="tempo-movimento">00:00</p>
                 </div>
                 <div class="info-item">
-                    <h3>Peças Capturadas</h3>
+                    <h3>Peças Capturadas: </h3>
                     <div class="captured-pieces">
-                        <p>Brancas:</p>
                         <div id="captured-brancas" class="pieces"></div>
-                        <p>Pretas:</p>
                         <div id="captured-pretas" class="pieces"></div>
                     </div>
                 </div>

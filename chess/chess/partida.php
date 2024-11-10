@@ -84,8 +84,13 @@ class ChessMatch
     }
 
     // Método para obter as peças capturadas
-    public function getCapturedPieces() {
-        return $this->capturedPieces;
+    public function getPiecesCaptured() {
+        $capturedPiecesFormatted = [];
+        foreach ($this->capturedPieces as $piece) {
+            $pieceCode = substr($piece->getType(), 0, 1) . ($piece->getColor() === 'black' ? 'p' : 'b');
+            $capturedPiecesFormatted[] = $pieceCode;
+        }
+        return $capturedPiecesFormatted;
     }
 
     // Método para converter a posição de entrada
@@ -314,6 +319,8 @@ class ChessMatch
         $this->currentPlayer = $opponentColor;
 
         $_SESSION['chessMatch'] = $this;
+
+
     }
 
 }
