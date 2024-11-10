@@ -1,19 +1,38 @@
 <?php
-
+// chess/pieces/torre.php
 class Rook {
     private $color;
     private $board;
 
-    public function __construct($color, $board) {
+    public function __construct($color, $board, $chessMatch) {
         $this->color = $color;
         $this->board = $board;
+        $this->chessMatch = $chessMatch;
     }
 
+    public function setPosition($position) {
+        $this->position = $position;
+    }
+
+    public function getPosition() {
+        return $this->position;
+    }
+
+    public function getColor() {
+        return $this->color;
+    }
+
+    public function getType() {
+        return 'torre';
+    }
+
+    // Verifica se a peça pode se mover para a posição de acordo com a cor
     private function canMove($position) {
         $piece = $this->board->pieceAt($position);
         return $piece === null || $piece->getColor() !== $this->color;
     }
 
+    // Movimentos possíveis para a torre
     public function possibleMoves($position) {
         $moves = array_fill(0, 8, array_fill(0, 8, false));
         $directions = [
@@ -30,7 +49,7 @@ class Rook {
             ];
 
             // Move-se na direção especificada até atingir o limite do tabuleiro ou uma peça
-            while ($this->board->positionExists($target) && !$this->board->hasPieceAt($target)) {
+            while ($this->board->positionExists($target) && !$this->board->hasPieceAt($target, $this->color)) {
                 $moves[$target['row']][$target['column']] = true;
                 $target = [
                     'row' => $target['row'] + $direction['row'],
@@ -46,10 +65,6 @@ class Rook {
 
         return $moves;
     }
-
-    public function getColor() {
-        return $this->color;
-    }
 }
 
-?>
+// Fim do código

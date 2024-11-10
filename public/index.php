@@ -3,7 +3,7 @@
 // Inclui o cabeçalho da página
 include __DIR__ . '/template/header.php';
 ?>
-
+<!-- Cabeçalho-->
 <div id="home-container">
     <h2>PHChess</h2>
     <h3>PHChess é um jogo de xadrez online.</h3>

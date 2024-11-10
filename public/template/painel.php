@@ -1,4 +1,4 @@
-<!-- Painel de Informações abaixo do tabuleiro -->
+            <!-- Painel de Informações -->
             <div class="info-panel">
                 <div class="info-item">
                     <h3>Total de Pontos: </h3>
@@ -21,7 +21,13 @@
                         <div id="captured-pretas" class="pieces"></div>
                     </div>
                 </div>
+                <div class="info-item">
+                    <div class="button-reload">
+                        <button id="btn-reload">RELOAD</button>
+                    </div>
+                    
+                    
+                </div>
             </div>
         </div>
-        <script src="js/chess/chess.js"></script>
-        <script src="js/cronometro.js"></script>
+        <script src="../js/cronometro.js"></script>

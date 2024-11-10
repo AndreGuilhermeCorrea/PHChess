@@ -1,5 +1,6 @@
     
     </main>
+    <!-- Rodapé -->
     <footer>
         <p>PHChess&copy;</p>
         <p>by <a href="mailto:de_correa@msn.com">de_correa@msn.com</a></p>
