@@ -1,6 +1,7 @@
 <?php
 // chess/chess/partida.php
 
+require_once __DIR__ . '/../exceptions/excecoes_xadrez.php';
 require_once __DIR__ . '/../pieces/rei.php';
 require_once __DIR__ . '/../pieces/rainha.php';
 require_once __DIR__ . '/../pieces/torre.php';
@@ -143,7 +144,7 @@ class ChessMatch
                 return $piece->getPosition();
             }
         }
-        throw new Exception("Rei não encontrado no tabuleiro");
+        throw new CautionException();
     }
 
     // Verifica se o movimento deixa o jogador em xeque
@@ -185,61 +186,7 @@ class ChessMatch
         }
         return true;
     }
-    /*
-    // Método para obter a peça na posição
-    public function performMove($source, $destination) {
-        $sourcePos = $this->convertPosition($source);
-        $destinationPos = $this->convertPosition($destination);
     
-        $piece = $this->board->pieceAt($sourcePos);
-    
-        if ($piece === null) {
-            throw new Exception("Nenhuma peça na posição de origem.");
-        }
-    
-        if ($piece->getColor() !== $this->currentPlayer) {
-            throw new Exception("Agora é o turno das peças " . ($this->currentPlayer === 'white' ? 'brancas' : 'pretas') . "!!!");
-        }
-    
-        $allowedMoves = $piece->possibleMoves($sourcePos);
-        if (!$allowedMoves[$destinationPos['row']][$destinationPos['column']]) {
-            throw new Exception("Movimento inválido para esta peça.");
-        }
-    
-        $capturedPiece = null;
-    
-        // Verifica se o movimento é uma captura en passant
-        if ($piece instanceof Pawn && $destinationPos === $this->enPassantVulnerable) {
-            $capturedPawnPosition = [
-                'row' => $sourcePos['row'],
-                'column' => $destinationPos['column']
-            ];
-            $capturedPiece = $this->board->removePiece($capturedPawnPosition);
-            error_log("Captura en passant realizada.");
-        } else if ($this->board->hasPieceAt($destinationPos, $piece->getColor())) {
-            $capturedPiece = $this->board->removePiece($destinationPos);
-            error_log("Peça capturada: " . $capturedPiece->getType());
-        }
-    
-        $this->board->movePiece($sourcePos, $destinationPos);
-        $piece->setPosition($destinationPos);
-    
-        // Atualiza vulnerabilidade en passant para peões que se movem duas casas
-        if ($piece instanceof Pawn && abs($sourcePos['row'] - $destinationPos['row']) === 2) {
-            $this->enPassantVulnerable = [
-                'row' => ($sourcePos['row'] + $destinationPos['row']) / 2,
-                'column' => $sourcePos['column']
-            ];
-        } else {
-            $this->enPassantVulnerable = null;
-        }
-    
-        $this->turn++;
-        $this->currentPlayer = $this->currentPlayer === 'white' ? 'black' : 'white';
-    
-        $_SESSION['chessMatch'] = $this;
-    }
-    */
     // Método para realizar um movimento
     public function performMove($source, $destination) {
         $sourcePos = $this->convertPosition($source);
@@ -248,16 +195,16 @@ class ChessMatch
         $piece = $this->board->pieceAt($sourcePos);
 
         if ($piece === null) {
-            throw new Exception("Nenhuma peça na posição de origem.");
+            throw new InvalidPositionException();
         }
 
         if ($piece->getColor() !== $this->currentPlayer) {
-            throw new Exception("Agora é o turno das peças " . ($this->currentPlayer === 'white' ? 'brancas' : 'pretas') . "!");
+            throw new TurnMismatchException();
         }
 
         $allowedMoves = $piece->possibleMoves($sourcePos);
         if (!$allowedMoves[$destinationPos['row']][$destinationPos['column']]) {
-            throw new Exception("Movimento inválido para esta peça.");
+            throw new InvalidMoveException();
         }
 
         $capturedPiece = null;
@@ -311,7 +258,7 @@ class ChessMatch
 
         if ($this->check && $this->isCheckMate($opponentColor)) {
             $this->checkMate = true;
-            throw new Exception("Xeque-mate! As " . ($this->currentPlayer === 'white' ? 'pretas' : 'brancas') . " venceram!");
+            throw new CheckmateException();
         }
 
         // Alterna o turno

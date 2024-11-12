@@ -1,5 +1,3 @@
-// public/js/move.js
-
 // Variáveis globais para controle de movimento e estado das peças
 let isMoving = false;
 let origin = null;
@@ -21,7 +19,6 @@ function atualizarTabuleiro(boardData) {
                 tile.innerHTML = ''; 
 
                 if (piece) {
-                    // Cria o elemento da peça
                     const pieceImage = document.createElement('img');
                     pieceImage.src = `../img/pieces/${piece}.png`;
                     pieceImage.className = 'piece';
@@ -35,7 +32,6 @@ function atualizarTabuleiro(boardData) {
         }
     });
 
-    // Reatribui os eventos de drag and drop para garantir o funcionamento correto
     atribuirEventosDragDrop();
 }
 
@@ -62,7 +58,7 @@ async function handleMove() {
         }
 
         const text = await response.text();
-
+        console.log("Resposta do back:", text); 
         const jsonStart = text.indexOf('{');
         if (jsonStart === -1) {
             throw new Error("Resposta não contém JSON válido.");
@@ -72,11 +68,11 @@ async function handleMove() {
         const dtajson = JSON.parse(jsonText);
 
         if (dtajson.success === false) {
-            alert(dtajson.message);
-            console.warn("Movimento inválido:", dtajson.message);
+            handleBackendError(dtajson);
         } else {
             atualizarTabuleiro(dtajson.board);
             atualizarPecasCapturadas(dtajson.capturedPieces); 
+            atualizarStatusJogo(dtajson);
         }
         origin = null;
         pieceId = null;
@@ -87,6 +83,38 @@ async function handleMove() {
     } finally {
         isMoving = false; 
     }
+}
+
+// Função para tratar os erros retornados pelo backend
+function handleBackendError(errorData) {
+    switch (errorData.type) {
+        case 'invalid_move':
+            alert("Movimento inválido!");
+            break;
+        case 'piece_not_yours':
+            alert("A peça não pertence a você.");
+            break;
+        case 'turn_mismatch':
+            alert("Não é sua vez de jogar.");
+            break;
+        case 'not_in_check':
+            alert("Você não pode se colocar em xeque.");
+            break;
+        case 'checkmate':
+            alert("Xeque-mate! O jogo terminou.");
+            break;
+        default:
+            alert(errorData.message || "Erro desconhecido.");
+    }
+    console.warn("Erro do backend:", errorData.message);
+}
+
+// Função para atualizar o status do jogo no painel
+function atualizarStatusJogo(statusData) {
+    document.getElementById('turno-atual').innerText = `Turno: ${statusData.turn}`;
+    document.getElementById('jogador-atual').innerText = `Jogador: ${statusData.currentPlayer}`;
+    document.getElementById('estado-xeque').innerText = statusData.check ? "Em Xeque!" : "";
+    document.getElementById('estado-xeque-mate').innerText = statusData.checkMate ? "Xeque-Mate!" : "";
 }
 
 // Função para atribuir os eventos de drag and drop
@@ -110,14 +138,11 @@ function atribuirEventosDragDrop() {
         square.addEventListener('drop', (event) => {
             event.preventDefault();
             const targetElement = event.target;
-
-            // Verifica se o elemento de destino é um quadrado e não uma peça
             destino = targetElement.classList.contains('square') ? targetElement.id : targetElement.parentNode.id;
             handleMove();
         });
     });
 }
-
 
 // Inicializa os eventos de drag and drop ao carregar a página
 document.addEventListener('DOMContentLoaded', atribuirEventosDragDrop);
@@ -132,7 +157,7 @@ document.getElementById('btn-reload').addEventListener('click', async () => {
         }
 
         const text = await response.text(); 
-        
+        console.log("Resposta do back:", text); 
         const jsonStart = text.indexOf('{');
         if (jsonStart === -1) {
             throw new Error("Resposta não contém JSON válido.");
@@ -146,6 +171,7 @@ document.getElementById('btn-reload').addEventListener('click', async () => {
         } else {
             atualizarTabuleiro(dtajson.board);
             atualizarPecasCapturadas(dtajson.capturedPieces);
+            atualizarStatusJogo(dtajson);
         }
 
     } catch (error) {
@@ -153,23 +179,19 @@ document.getElementById('btn-reload').addEventListener('click', async () => {
     }
 });
 
-
 // Função para atualizar o painel de peças capturadas
 function atualizarPecasCapturadas(capturedPieces) {
     const capturedPretas = document.getElementById('captured-pretas');
     const capturedBrancas = document.getElementById('captured-brancas');
     
-    // Limpa as listas antes de inserir as novas peças capturadas
     capturedPretas.innerHTML = '';
     capturedBrancas.innerHTML = '';
 
-    // Insere cada peça capturada na sua respectiva seção
     capturedPieces.forEach(pieceCode => {
         const img = document.createElement('img');
         img.src = `../img/pieces/${pieceCode}.png`;
         img.classList.add('captured-piece');
 
-        // Verifica a cor pelo sufixo 
         if (pieceCode.endsWith('p')) {
             capturedPretas.appendChild(img); 
         } else {
@@ -177,4 +199,3 @@ function atualizarPecasCapturadas(capturedPieces) {
         }
     });
 }
-

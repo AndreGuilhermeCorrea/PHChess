@@ -10,6 +10,7 @@ require_once __DIR__ . '/../../chess/pieces/bispo.php';
 require_once __DIR__ . '/../../chess/pieces/cavalo.php';
 require_once __DIR__ . '/../../chess/pieces/torre.php';
 require_once __DIR__ . '/../../chess/pieces/peao.php';
+require_once __DIR__ . '/../../chess/exceptions/excecoes_xadrez.php';
 
 session_start();
 
@@ -19,8 +20,7 @@ function movePiece() {
     $dataDecoded = json_decode($dados, true);
 
     if (!$dataDecoded) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Nenhum dado recebido ou falha na decodificação']);
+        respondWithJson(['success' => false, 'message' => 'Nenhum dado recebido ou falha na decodificação']);
         return;
     }
 
@@ -37,8 +37,7 @@ function movePiece() {
     $pieceId = $dataDecoded['peca'] ?? null;
 
     if (!$origin || !$destination || !$pieceId) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => 'Dados de origem, destino ou peça ausentes']);
+        respondWithJson(['success' => false, 'message' => 'Dados de origem, destino ou peça ausentes']);
         return;
     }
 
@@ -49,41 +48,44 @@ function movePiece() {
         $_SESSION['chessMatch'] = $chessMatch;
         session_write_close();
     
-        // Obtém o estado atual do tabuleiro e as peças capturadas
-        $tabuleiroArray = $chessMatch->getPieces();
-        $capturedPieces = $chessMatch->getPiecesCaptured();
-    
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'board' => $tabuleiroArray,
-            'capturedPieces' => $capturedPieces
-        ]);
-        exit;
+        respondWithGameStatus($chessMatch);
+    } catch (ChessException $e) {
+        respondWithJson($e->toArray());
     } catch (Exception $e) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        respondWithJson(['success' => false, 'message' => 'Erro desconhecido: ' . $e->getMessage()]);
     }
 }
 
-
-function restart(){
+// Função para reiniciar o jogo
+function restart() {
     try {
         $_SESSION['chessMatch'] = new ChessMatch();
         $chessMatch = $_SESSION['chessMatch'];
-        
-        $tabuleiroArray = $chessMatch->getPieces();
-        $capturedPieces = $chessMatch->getPiecesCaptured();
-    
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => true,
-            'board' => $tabuleiroArray,
-            'capturedPieces' => $capturedPieces
-        ]);
-        exit;
+        respondWithGameStatus($chessMatch);
     } catch (Exception $e) {
-        header('Content-Type: application/json');
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+        respondWithJson(['success' => false, 'message' => 'Erro ao reiniciar o jogo: ' . $e->getMessage()]);
     }
+}
+
+// Função com o estado do jogo
+function respondWithGameStatus($chessMatch) {
+    $tabuleiroArray = $chessMatch->getPieces();
+    $capturedPieces = $chessMatch->getPiecesCaptured();
+
+    respondWithJson([
+        'success' => true,
+        'board' => $tabuleiroArray,
+        'capturedPieces' => $capturedPieces,
+        'turn' => $chessMatch->getTurn(),
+        'currentPlayer' => $chessMatch->getCurrentPlayer(),
+        'check' => $chessMatch->isCheck(),
+        'checkMate' => $chessMatch->isCheckMate()
+    ]);
+}
+
+// Função para responder com JSON
+function respondWithJson($data) {
+    header('Content-Type: application/json');
+    echo json_encode($data);
+    exit;
 }

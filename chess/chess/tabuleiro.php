@@ -1,5 +1,8 @@
 <?php
 // chess/chess/tabuleiro.php
+
+require_once __DIR__ . '/../exceptions/excecoes_xadrez.php';
+
 class Board {
     private $rows;
     private $columns;
@@ -14,9 +17,9 @@ class Board {
     // Método para colocar uma peça em uma posição
     public function placePiece($piece, $position) {
         if (!$this->positionExists($position)) {
-            throw new Exception("Posição inválida no tabuleiro!");
+            throw new InvalidPieceException();
         } elseif ($this->pieceAt($position) !== null) {
-            throw new Exception("Já existe uma peça nessa posição!");
+            throw new InvalidPositionException();
         }else{
             $this->grid[$position['row']][$position['column']] = $piece;
         }
@@ -25,7 +28,8 @@ class Board {
     // Método para remover uma peça de uma posição
     public function removePiece($position) {
         if (!$this->positionExists($position)) {
-            throw new Exception("Posição inválida no tabuleiro!");
+
+            throw new InvalidPositionException();
         }else{
             $piece = $this->grid[$position['row']][$position['column']];
             $this->grid[$position['row']][$position['column']] = null;
@@ -45,7 +49,7 @@ class Board {
     public function movePiece($oldPosition, $newPosition)
     {
         if (!$this->positionExists($newPosition) || !$this->positionExists($oldPosition)) {
-            throw new Exception("Posição inválida no tabuleiro!");
+            throw new InvalidPositionException();
         }else{
             $piece = $this->removePiece($oldPosition);
             $this->placePiece($piece, $newPosition);
