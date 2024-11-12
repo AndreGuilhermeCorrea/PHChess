@@ -1,6 +1,9 @@
 <?php
 // chess/pieces/bispo.php
-class Bishop {
+
+require_once __DIR__ . '/../interfaces/pecas_interface.php';
+
+class Bishop implements ChessPieceInterface {
     private $color;
     private $board;
 

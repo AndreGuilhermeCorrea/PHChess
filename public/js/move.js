@@ -38,6 +38,7 @@ function atualizarTabuleiro(boardData) {
     // Reatribui os eventos de drag and drop para garantir o funcionamento correto
     atribuirEventosDragDrop();
 }
+
 // Função para mover a peça e evitar requisições simultâneas
 async function handleMove() {
     if (isMoving) return; 
@@ -48,8 +49,6 @@ async function handleMove() {
         destino: destino,
         peca: pieceId,
     };
-
-    console.log("Dados enviados:", data);
 
     try {
         const response = await fetch('/api/routes.php?move', {
@@ -63,7 +62,6 @@ async function handleMove() {
         }
 
         const text = await response.text();
-        console.log('Resposta bruta Tabuleiro:', text);
 
         const jsonStart = text.indexOf('{');
         if (jsonStart === -1) {
@@ -77,14 +75,12 @@ async function handleMove() {
             alert(dtajson.message);
             console.warn("Movimento inválido:", dtajson.message);
         } else {
-            console.log("Estado recebido do backend:", dtajson.board);
             atualizarTabuleiro(dtajson.board);
             atualizarPecasCapturadas(dtajson.capturedPieces); 
         }
         origin = null;
         pieceId = null;
         destino = null;
-        console.log("Setando variáveis de controle para null.", origin, pieceId, destino);
 
     } catch (error) {
         console.error("Erro ao mover a peça:", error.message);
@@ -136,7 +132,6 @@ document.getElementById('btn-reload').addEventListener('click', async () => {
         }
 
         const text = await response.text(); 
-        console.log('Resposta bruta Tabuleiro reiniciado:', text);
         
         const jsonStart = text.indexOf('{');
         if (jsonStart === -1) {
@@ -149,7 +144,6 @@ document.getElementById('btn-reload').addEventListener('click', async () => {
         if (dtajson.success === false) {
             alert(dtajson.message);
         } else {
-            console.log('JSON parseado Tabuleiro reiniciado:', dtajson);
             atualizarTabuleiro(dtajson.board);
             atualizarPecasCapturadas(dtajson.capturedPieces);
         }

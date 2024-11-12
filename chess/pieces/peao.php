@@ -1,6 +1,9 @@
 <?php
 // chess/pieces/peao.php
-class Pawn {
+
+require_once __DIR__ . '/../interfaces/pecas_interface.php';
+
+class Pawn implements ChessPieceInterface {
     private $color;
     private $board;
     private $chessMatch;

@@ -1,6 +1,9 @@
 <?php
 // chess/pieces/Rei.php
-class King {
+
+require_once __DIR__ . '/../interfaces/pecas_interface.php';
+
+class King implements ChessPieceInterface {
     private $color;
     private $board;
     private $chessMatch;

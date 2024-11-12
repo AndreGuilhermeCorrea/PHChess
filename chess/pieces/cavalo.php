@@ -1,6 +1,9 @@
 <?php
 // chess/pieces/cavalo.php
-class Knight {
+
+require_once __DIR__ . '/../interfaces/pecas_interface.php';
+
+class Knight implements ChessPieceInterface {
     private $color;
     private $board;
 
