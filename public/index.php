@@ -1,8 +1,5 @@
-<?php
-// Index.php
-// Inclui o cabeçalho da página
-include __DIR__ . '/template/header.php';
-?>
+<?php include 'header.php'; ?>
+
 <!-- Cabeçalho-->
 <div id="home-container">
     <h2>PHChess</h2>
@@ -19,7 +16,4 @@ include __DIR__ . '/template/header.php';
     </div>
 </div>
 
-<?php
-// Inclui o rodapé
-include __DIR__ . '/template/footer.php';
-?>
+<?php include 'footer.php'; ?>

@@ -1,6 +1,5 @@
+<?php include '../header.php'; ?>
 <?php
-// public/template/game_board.php
-require_once('header.php');
 
 // Define as posições iniciais das peças no tabuleiro
 $initialPieces = [
@@ -75,7 +74,7 @@ $initialPieces = [
 <!-- Painel de informações e rodapé -->
 <?php
 require_once('painel.php');
-require_once('footer.php');
+require_once('../footer.php');
 ?>
 <!-- Script de movimentação das peças -->
 <script src="../js/move.js"></script> 

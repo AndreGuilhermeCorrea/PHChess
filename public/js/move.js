@@ -87,34 +87,29 @@ async function handleMove() {
 
 // Função para tratar os erros retornados pelo backend
 function handleBackendError(errorData) {
-    switch (errorData.type) {
-        case 'invalid_move':
-            alert("Movimento inválido!");
-            break;
-        case 'piece_not_yours':
-            alert("A peça não pertence a você.");
-            break;
-        case 'turn_mismatch':
-            alert("Não é sua vez de jogar.");
-            break;
-        case 'not_in_check':
-            alert("Você não pode se colocar em xeque.");
-            break;
-        case 'checkmate':
-            alert("Xeque-mate! O jogo terminou.");
-            break;
-        default:
-            alert(errorData.message || "Erro desconhecido.");
-    }
+    const errorMessages = {
+        'invalid_move': "Movimento inválido!",
+        'piece_not_yours': "A peça não pertence a você.",
+        'turn_mismatch': "Não é sua vez de jogar.",
+        'not_in_check': "Você não pode se colocar em xeque.",
+        'checkmate': "Xeque-mate! O jogo terminou.",
+    };
+
+    alert(errorMessages[errorData.type] || errorData.message || "Erro desconhecido.");
     console.warn("Erro do backend:", errorData.message);
 }
 
 // Função para atualizar o status do jogo no painel
 function atualizarStatusJogo(statusData) {
-    document.getElementById('turno-atual').innerText = `Turno: ${statusData.turn}`;
-    document.getElementById('jogador-atual').innerText = `Jogador: ${statusData.currentPlayer}`;
-    document.getElementById('estado-xeque').innerText = statusData.check ? "Em Xeque!" : "";
-    document.getElementById('estado-xeque-mate').innerText = statusData.checkMate ? "Xeque-Mate!" : "";
+    const turnoAtualElem = document.getElementById('turno-atual');
+    const jogadorAtualElem = document.getElementById('jogador-atual');
+    const estadoXequeElem = document.getElementById('estado-xeque');
+    const estadoXequeMateElem = document.getElementById('estado-xeque-mate');
+
+    if (turnoAtualElem) turnoAtualElem.innerText = `Turno: ${statusData.turn}`;
+    if (jogadorAtualElem) jogadorAtualElem.innerText = `Jogador: ${statusData.currentPlayer}`;
+    if (estadoXequeElem) estadoXequeElem.innerText = statusData.check ? "Em Xeque!" : "";
+    if (estadoXequeMateElem) estadoXequeMateElem.innerText = statusData.checkMate ? "Xeque-Mate!" : "";
 }
 
 // Função para atribuir os eventos de drag and drop
@@ -145,37 +140,43 @@ function atribuirEventosDragDrop() {
 }
 
 // Inicializa os eventos de drag and drop ao carregar a página
-document.addEventListener('DOMContentLoaded', atribuirEventosDragDrop);
+document.addEventListener('DOMContentLoaded', () => {
+    atribuirEventosDragDrop();
 
-// Função para reiniciar o jogo
-document.getElementById('btn-reload').addEventListener('click', async () => {
-    try {
-        const response = await fetch('/api/routes.php?initialize', { method: 'POST' });
-        
-        if (!response.ok) {
-            throw new Error(`Erro na requisição: ${response.statusText}`);
-        }
+    const btnReload = document.getElementById('btn-reload');
+    if (btnReload) {
+        btnReload.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/routes.php?initialize', { method: 'POST' });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.statusText}`);
+                }
 
-        const text = await response.text(); 
-        console.log("Resposta do back:", text); 
-        const jsonStart = text.indexOf('{');
-        if (jsonStart === -1) {
-            throw new Error("Resposta não contém JSON válido.");
-        }
-        
-        const jsonText = text.substring(jsonStart);
-        const dtajson = JSON.parse(jsonText);
+                const text = await response.text(); 
+                console.log("Resposta do back:", text); 
+                const jsonStart = text.indexOf('{');
+                if (jsonStart === -1) {
+                    throw new Error("Resposta não contém JSON válido.");
+                }
+                
+                const jsonText = text.substring(jsonStart);
+                const dtajson = JSON.parse(jsonText);
 
-        if (dtajson.success === false) {
-            alert(dtajson.message);
-        } else {
-            atualizarTabuleiro(dtajson.board);
-            atualizarPecasCapturadas(dtajson.capturedPieces);
-            atualizarStatusJogo(dtajson);
-        }
+                if (dtajson.success === false) {
+                    alert(dtajson.message);
+                } else {
+                    atualizarTabuleiro(dtajson.board);
+                    atualizarPecasCapturadas(dtajson.capturedPieces);
+                    atualizarStatusJogo(dtajson);
+                }
 
-    } catch (error) {
-        console.error("Erro ao reiniciar o tabuleiro:", error.message);
+            } catch (error) {
+                console.error("Erro ao reiniciar o tabuleiro:", error.message);
+            }
+        });
+    } else {
+        console.error("Erro inesperado com o botão");
     }
 });
 
@@ -183,19 +184,23 @@ document.getElementById('btn-reload').addEventListener('click', async () => {
 function atualizarPecasCapturadas(capturedPieces) {
     const capturedPretas = document.getElementById('captured-pretas');
     const capturedBrancas = document.getElementById('captured-brancas');
-    
-    capturedPretas.innerHTML = '';
-    capturedBrancas.innerHTML = '';
 
-    capturedPieces.forEach(pieceCode => {
-        const img = document.createElement('img');
-        img.src = `../img/pieces/${pieceCode}.png`;
-        img.classList.add('captured-piece');
+    if (capturedPretas && capturedBrancas) {
+        capturedPretas.innerHTML = '';
+        capturedBrancas.innerHTML = '';
 
-        if (pieceCode.endsWith('p')) {
-            capturedPretas.appendChild(img); 
-        } else {
-            capturedBrancas.appendChild(img); 
-        }
-    });
+        capturedPieces.forEach(pieceCode => {
+            const img = document.createElement('img');
+            img.src = `../img/pieces/${pieceCode}.png`;
+            img.classList.add('captured-piece');
+
+            if (pieceCode.endsWith('p')) {
+                capturedPretas.appendChild(img); 
+            } else {
+                capturedBrancas.appendChild(img); 
+            }
+        });
+    } else {
+        console.error("Erro ao atualizar as peças capturadas.");
+    }
 }

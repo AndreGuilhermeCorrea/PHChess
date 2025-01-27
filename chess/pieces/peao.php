@@ -14,19 +14,19 @@ class Pawn implements ChessPieceInterface {
         $this->chessMatch = $chessMatch;
     }
 
-    public function getType() {
+    public function getType(): string {
         return 'peao';
     }
     
-    public function setPosition($position) {
+    public function setPosition(array $position): void {
         $this->position = $position;
     }
 
-    public function getPosition() {
+    public function getPosition(): array {
         return $this->position;
     }
 
-    public function getColor() {
+    public function getColor(): string {
         return $this->color;
     }
 
@@ -37,7 +37,7 @@ class Pawn implements ChessPieceInterface {
     }
 
     // Movimentos possíveis para o peão
-    public function possibleMoves($position) {
+    public function possibleMoves(array $position): array {
         $moves = array_fill(0, 8, array_fill(0, 8, false)); 
         $direction = $this->color === 'white' ? -1 : 1;
         $startingRow = $this->color === 'white' ? 6 : 1;

@@ -74,6 +74,7 @@ class ChessMatch
         $this->setPieces($piecesWithPositions);
     }
 
+    // Método para obter a vulnerabilidade en passant
     public function getEnPassantVulnerable() {
         return $this->enPassantVulnerable;
     }
@@ -84,8 +85,30 @@ class ChessMatch
         return $this->board->getMatrixPieces();
     }
 
+    // Método para obter o turno atual
+    public function getTurn(): int {
+        return $this->turn;
+    }
+
+    // Método para obter o jogador atual
+    public function getCurrentPlayer(): string {
+        return $this->currentPlayer;
+    }
+
+    // Método para verificar se o jogador atual está em xeque
+    public function isCheck(): bool
+    {
+        return $this->check;
+    }
+
+    // Método para verificar se o jogador atual está em xeque-mate
+    public function isCheckMate(): bool
+    {
+        return $this->checkMate;
+    }
+
     // Método para obter as peças capturadas
-    public function getPiecesCaptured() {
+    public function getPiecesCaptured(): array{
         $capturedPiecesFormatted = [];
         foreach ($this->capturedPieces as $piece) {
             $pieceCode = substr($piece->getType(), 0, 1) . ($piece->getColor() === 'black' ? 'p' : 'b');
@@ -97,8 +120,8 @@ class ChessMatch
     // Método para converter a posição de entrada
     private function convertPosition($position)
     {
-        $column = ord($position[0]) - ord('a');  // Conversão de coluna para índice
-        $row = 8 - (int)$position[1];           // Conversão de linha para índice
+        $column = ord($position[0]) - ord('a'); 
+        $row = 8 - (int)$position[1];           
         return ['row' => $row, 'column' => $column];
     }
 
@@ -115,61 +138,11 @@ class ChessMatch
         }   
     }
 
-    // Retorna o status de xeque
-    public function isCheck()
-    {
-        return $this->check;
-    }
-
-    // Verifica se o rei do jogador atual está em xeque
-    public function isInCheck($color)
-    {
-        $kingPosition = $this->findKingPosition($color);
-        foreach ($this->piecesOnBoard as $piece) {
-            if ($piece->getColor() !== $color) {
-                $allowedMoves = $piece->possibleMoves($piece->getPosition());
-                if ($allowedMoves[$kingPosition['row']][$kingPosition['column']]) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    // Encontra a posição do rei para uma determinada cor
-    private function findKingPosition($color)
+    // Método para verificar se o jogador está em xeque-mate
+    private function determineCheckMate($color): bool
     {
         foreach ($this->piecesOnBoard as $piece) {
-            if ($piece instanceof King && $piece->getColor() === $color) {
-                return $piece->getPosition();
-            }
-        }
-        throw new CautionException();
-    }
-
-    // Verifica se o movimento deixa o jogador em xeque
-    private function testCheckAfterMove($sourcePos, $destinationPos)
-    {
-        $piece = $this->board->pieceAt($sourcePos);
-        $capturedPiece = $this->board->pieceAt($destinationPos);
-
-        // Realiza o movimento temporário
-        $this->board->movePiece($sourcePos, $destinationPos);
-        $inCheck = $this->isInCheck($piece->getColor());
-        
-        // Reverte o movimento
-        $this->board->movePiece($destinationPos, $sourcePos);
-        if ($capturedPiece) {
-            $this->board->placePiece($capturedPiece, $destinationPos);
-        }
-        return $inCheck;
-    }
-
-    // Verifica xeque-mate ao tentar todos os movimentos
-    private function isCheckMate()
-    {
-        foreach ($this->piecesOnBoard as $piece) {
-            if ($piece->getColor() === $this->currentPlayer) {
+            if ($piece->getColor() === $color) {
                 $allowedMoves = $piece->possibleMoves($piece->getPosition());
                 foreach ($allowedMoves as $row => $columns) {
                     foreach ($columns as $col => $canMove) {
@@ -186,12 +159,54 @@ class ChessMatch
         }
         return true;
     }
-    
+
+
+    // Encontra a posição do rei para uma determinada cor
+    private function findKingPosition($color)
+    {
+        foreach ($this->piecesOnBoard as $piece) {
+            if ($piece instanceof King && $piece->getColor() === $color) {
+                return $piece->getPosition();
+            }
+        }
+        throw new CautionException();
+    }
+    // Método para verificar se o jogador está em xeque-mate após um movimento
+    private function testCheckAfterMove($sourcePos, $destinationPos): bool
+    {
+        $piece = $this->board->pieceAt($sourcePos);
+        $capturedPiece = $this->board->pieceAt($destinationPos);
+
+        $this->board->movePiece($sourcePos, $destinationPos);
+        $inCheck = $this->isInCheck($piece->getColor());
+
+        $this->board->movePiece($destinationPos, $sourcePos);
+        if ($capturedPiece) {
+            $this->board->placePiece($capturedPiece, $destinationPos);
+        }
+        return $inCheck;
+    }
+
+    // Método para verificar se o jogador está em xeque-mate
+    public function isInCheck($color): bool
+    {
+        $kingPosition = $this->findKingPosition($color);
+        foreach ($this->piecesOnBoard as $piece) {
+            if ($piece->getColor() !== $color) {
+                $allowedMoves = $piece->possibleMoves($piece->getPosition());
+                if ($allowedMoves[$kingPosition['row']][$kingPosition['column']]) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+   
     // Método para realizar um movimento
-    public function performMove($source, $destination) {
+    public function performMove($source, $destination)
+    {
         $sourcePos = $this->convertPosition($source);
         $destinationPos = $this->convertPosition($destination);
-
         $piece = $this->board->pieceAt($sourcePos);
 
         if ($piece === null) {
@@ -209,65 +224,33 @@ class ChessMatch
 
         $capturedPiece = null;
 
-        // Verifica se o movimento é uma captura en passant
         if ($piece instanceof Pawn && $destinationPos === $this->enPassantVulnerable) {
-            $capturedPawnPosition = [
-                'row' => $sourcePos['row'],
-                'column' => $destinationPos['column']
-            ];
+            $capturedPawnPosition = ['row' => $sourcePos['row'], 'column' => $destinationPos['column']];
             $capturedPiece = $this->board->removePiece($capturedPawnPosition);
-            error_log("Captura en passant realizada.");
-        } else if ($this->board->hasPieceAt($destinationPos, $piece->getColor())) {
-            // Captura normal
+        } elseif ($this->board->hasPieceAt($destinationPos, $piece->getColor())) {
             $capturedPiece = $this->board->removePiece($destinationPos);
-            error_log("Peça capturada: " . $capturedPiece->getType());
         }
 
-        // Adiciona a peça capturada à lista de peças capturadas
         if ($capturedPiece) {
             $this->capturedPieces[] = $capturedPiece;
-            $this->piecesOnBoard = array_filter($this->piecesOnBoard, function($p) use ($capturedPiece) {
-                return $p !== $capturedPiece;
-            });
-        
-            // Log das peças capturadas
-            error_log("Peça capturada: " . $capturedPiece->getType() . " (" . $capturedPiece->getColor() . ")");
-            error_log("Peças capturadas até agora:");
-            foreach ($this->capturedPieces as $captured) {
-                error_log("- " . $captured->getType() . " (" . $captured->getColor() . ")");
-            }
+            $this->piecesOnBoard = array_filter($this->piecesOnBoard, fn($p) => $p !== $capturedPiece);
         }
 
-        // Move a peça para a nova posição
         $this->board->movePiece($sourcePos, $destinationPos);
         $piece->setPosition($destinationPos);
 
-        // Atualiza vulnerabilidade en passant
-        if ($piece instanceof Pawn && abs($sourcePos['row'] - $destinationPos['row']) === 2) {
-            $this->enPassantVulnerable = [
-                'row' => ($sourcePos['row'] + $destinationPos['row']) / 2,
-                'column' => $sourcePos['column']
-            ];
-        } else {
-            $this->enPassantVulnerable = null;
-        }
+        $this->enPassantVulnerable = ($piece instanceof Pawn && abs($sourcePos['row'] - $destinationPos['row']) === 2)
+            ? ['row' => ($sourcePos['row'] + $destinationPos['row']) / 2, 'column' => $sourcePos['column']]
+            : null;
 
-        // Verifica se o jogador adversário está em xeque
         $opponentColor = $this->currentPlayer === 'white' ? 'black' : 'white';
         $this->check = $this->isInCheck($opponentColor);
 
-        if ($this->check && $this->isCheckMate($opponentColor)) {
-            $this->checkMate = true;
-            throw new CheckmateException();
-        }
+        $this->checkMate = $this->check && $this->determineCheckMate($opponentColor);
 
-        // Alterna o turno
         $this->turn++;
         $this->currentPlayer = $opponentColor;
-
         $_SESSION['chessMatch'] = $this;
-
-
     }
 
 }

@@ -13,19 +13,19 @@ class Queen implements ChessPieceInterface {
         $this->chessMatch = $chessMatch;
     }
 
-    public function getType() {
+    public function getType(): string {
         return 'queen';
     }
 
-    public function setPosition($position) {
+    public function setPosition(array $position): void {
         $this->position = $position;
     }
 
-    public function getPosition() {
+    public function getPosition(): array {
         return $this->position;
     }
 
-    public function getColor() {
+    public function getColor(): string {
         return $this->color;
     }
 
@@ -36,7 +36,7 @@ class Queen implements ChessPieceInterface {
     }
 
     // Movimentos possíveis para a rainha
-    public function possibleMoves($position) {
+    public function possibleMoves(array $position): array {
         $moves = array_fill(0, 8, array_fill(0, 8, false));
         $directions = [
             ['row' => -1, 'column' => 0],   // Acima

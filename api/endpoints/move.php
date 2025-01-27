@@ -69,13 +69,10 @@ function restart() {
 
 // Função com o estado do jogo
 function respondWithGameStatus($chessMatch) {
-    $tabuleiroArray = $chessMatch->getPieces();
-    $capturedPieces = $chessMatch->getPiecesCaptured();
-
     respondWithJson([
         'success' => true,
-        'board' => $tabuleiroArray,
-        'capturedPieces' => $capturedPieces,
+        'board' => $chessMatch->getPieces(),
+        'capturedPieces' => $chessMatch->getPiecesCaptured(),
         'turn' => $chessMatch->getTurn(),
         'currentPlayer' => $chessMatch->getCurrentPlayer(),
         'check' => $chessMatch->isCheck(),

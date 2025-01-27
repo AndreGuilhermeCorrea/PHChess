@@ -13,19 +13,19 @@ class Bishop implements ChessPieceInterface {
         $this->chessMatch = $chessMatch;
     }
 
-    public function getType() {
+    public function getType(): string {
         return 'bispo';
     }
 
-    public function setPosition($position) {
+    public function setPosition(array $position): void {
         $this->position = $position;
     }
 
-    public function getPosition() {
+    public function getPosition(): array {
         return $this->position;
     }
 
-    public function getColor() {
+    public function getColor(): string {
         return $this->color;
     }
 
@@ -36,7 +36,7 @@ class Bishop implements ChessPieceInterface {
     }
 
     // Movimentos possíveis para o bispo
-    public function possibleMoves($position) {
+    public function possibleMoves(array $position): array {
         $moves = array_fill(0, 8, array_fill(0, 8, false));
         $directions = [
             ['row' => -1, 'column' => -1], // Noroeste
